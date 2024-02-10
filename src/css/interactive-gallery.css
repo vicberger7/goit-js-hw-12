@@ -26,6 +26,7 @@
 }
 .image-container {
   width: 1128px;
+  padding-bottom: 10px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -47,7 +48,7 @@
 }
 
 .loader {
-  font-size: 48px;
+  font-size: 28px;
   color: black;
   display: inline-block;
   font-family: Arial, Helvetica, sans-serif;
@@ -118,4 +119,21 @@
   100% {
     content: 'Loading...';
   }
+}
+
+.load-more-btn {
+  display: flex;
+  flex-direction: row;
+  margin: 0 auto;
+  width: 120px;
+    height: 40px;
+    padding: 8px, 16px;
+    border-radius: 8px;
+    background-color: #4e75ff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    color: #fff;
 }
