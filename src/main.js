@@ -1,5 +1,7 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 import cssLoader from 'css-loader';
 import axios from 'axios';
 
@@ -9,11 +11,14 @@ const refs = {
   loadMoreBtn: document.querySelector('.load-more-btn'),
 };
 
-async function searchImage(imagename, page = 1, perPage = 15) {
+const loader = document.querySelector('.loader');
+loader.style.display = 'none';
+
+async function searchImage(imageName, page = 1, perPage = 15) {
   const BASE_URL = 'https://pixabay.com/api/';
   const searchParams = new URLSearchParams({
     key: '42138103-4c7bc70fd41b029843ebe333e',
-    q: imagename,
+    q: imageName,
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: true,
@@ -32,23 +37,6 @@ async function searchImage(imagename, page = 1, perPage = 15) {
   }
 }
 
-const loader = document.querySelector('.loader');
-loader.style.display = 'none';
-
-function showLoader() {
-  loader.style.display = 'block';
-  setTimeout(() => {
-    refs.loadMoreBtn.style.display = 'none';
-  }, 0);
-}
-
-function hideLoader() {
-  loader.style.display = 'none';
-  if (refs.imageEl.children.length >= 15) {
-    refs.loadMoreBtn.style.display = 'block';
-  }
-}
-
 function displayImages(images, clearPrevious = true) {
   const imageContainer = document.querySelector('.js-image-container');
 
@@ -56,11 +44,9 @@ function displayImages(images, clearPrevious = true) {
     imageContainer.innerHTML = '';
   }
 
-  showLoader();
-  setTimeout(() => {
-    const galleryHTML = images
-      .map(image => {
-        return `
+  const galleryHTML = images
+    .map(image => {
+      return `
       <a href="${image.largeImageURL}" class="lightbox">
         <div class="image-card">
           <img src="${image.webformatURL}" alt="${image.tags}">
@@ -71,26 +57,25 @@ function displayImages(images, clearPrevious = true) {
         </div>
       </a>
     `;
-      })
-      .join('');
+    })
+    .join('');
 
-    if (!clearPrevious) {
-      imageContainer.insertAdjacentHTML('beforeend', galleryHTML);
-    } else {
-      imageContainer.innerHTML = galleryHTML;
-    }
-    hideLoader();
-    lightbox.refresh();
+  if (!clearPrevious) {
+    imageContainer.insertAdjacentHTML('beforeend', galleryHTML);
+  } else {
+    imageContainer.innerHTML = galleryHTML;
+  }
+  loader.style.display = 'none';
+  lightbox.refresh();
 
-    const cardHeight = document
-      .querySelector('.image-card')
-      .getBoundingClientRect().height;
+  const cardHeight = document
+    .querySelector('.image-card')
+    .getBoundingClientRect().height;
 
-    window.scrollBy({
-      top: cardHeight * 2,
-      behavior: 'smooth',
-    });
-  }, 2000);
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
 
 const lightbox = new SimpleLightbox('.js-image-container  a', {
@@ -106,7 +91,7 @@ async function loadMoreImages() {
     currentPage++;
     const data = await searchImage(searchQuery, currentPage);
     if (data.hits.length === 0) {
-      hideLoader();
+      loader.style.display = 'none';
       refs.loadMoreBtn.style.display = 'none';
       iziToast.info({
         title: 'Info',
@@ -128,10 +113,11 @@ refs.loadMoreBtn.addEventListener('click', loadMoreImages);
 
 refs.formEl.addEventListener('submit', async e => {
   e.preventDefault();
-
-  const name = e.target.elements.query.value;
+  loader.style.display = 'block';
+  const name = e.target.elements.query.value.trim();
 
   if (!name) {
+    loader.style.display = 'none';
     iziToast.error({
       title: 'Error',
       message: 'Please enter a search query!',
@@ -146,6 +132,7 @@ refs.formEl.addEventListener('submit', async e => {
   try {
     const data = await searchImage(name);
     if (data.hits.length === 0) {
+      loader.style.display = 'none';
       iziToast.error({
         title: 'Error',
         message:
@@ -164,5 +151,7 @@ refs.formEl.addEventListener('submit', async e => {
       message:
         'Sorry, there are no images matching your search query. Please try again!',
     });
+  } finally {
+    loader.style.display = 'none';
   }
 });
