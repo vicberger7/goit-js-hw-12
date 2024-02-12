@@ -25,9 +25,9 @@
   color: #fff;
 }
 .load-more-btn.disabled {
-  background-color: #ccc; /* Change the background color */
-  color: #666; /* Change the text color */
-  cursor: not-allowed; /* Change the cursor */
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
 }
 .image-container {
   width: 1128px;
