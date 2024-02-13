@@ -8,17 +8,17 @@ const domElements = {
   formEl: document.querySelector('.js-search-form[data-id="1"]'),
   imageEl: document.querySelector('.js-image-container'),
   loadMoreBtn: document.querySelector('.load-more-btn'),
+  loader: document.querySelector('.loader'),
 };
 
-const loader = document.querySelector('.loader');
-loader.style.display = 'none';
+domElements.loader.style.display = 'none';
 
 function showLoader() {
-  loader.style.display = 'block';
+  domElements.loader.style.display = 'block';
 }
 
 function hideLoader() {
-  loader.style.display = 'none';
+  domElements.loader.style.display = 'none';
 }
 
 async function searchImage(imageName, page = 1, perPage = 15) {
@@ -40,6 +40,7 @@ async function searchImage(imageName, page = 1, perPage = 15) {
     return response.data;
   } catch (error) {
     console.error('Error fetching images:', error);
+    throw error;
   }
 }
 
@@ -104,6 +105,7 @@ domElements.formEl.addEventListener('submit', async e => {
     searchQuery = '';
     currentPage = 1;
     domElements.loadMoreBtn.style.display = 'none';
+
     return hideLoader();
   }
 
